@@ -1,0 +1,16 @@
+{
+  service: 'messanger-app',
+  tag: 'db.js',
+  data: { ok: 0, code: 18, codeName: 'AuthenticationFailed' },
+  level: 'error',
+  message: 'Authentication failed.',
+  timestamp: '2021-12-27 17:42:07'
+}
+{
+  service: 'messanger-app',
+  tag: 'db.js',
+  data: { ok: 0, code: 18, codeName: 'AuthenticationFailed' },
+  level: 'error',
+  message: 'Authentication failed.',
+  timestamp: '2021-12-27 17:42:26'
+}

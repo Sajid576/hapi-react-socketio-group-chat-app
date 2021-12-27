@@ -3,8 +3,10 @@
 const { ENV, HOST, PORT } = require("../utils/env");
 const { DEV } = require("../utils/constants");
 const { connectSocket } = require("../config/socket");
+const logger = require("../utils/logger");
 
 const config = async () => {
+  require("./db");
   const server = require("@hapi/hapi").server({
     host: HOST || "localhost",
     port: PORT || 8080,
@@ -17,30 +19,31 @@ const config = async () => {
   await server.register([
     {
       plugin: require("hapi-pino"),
-      //   options: {
-      //     logPayload: true,
-      //     logRouteTags: true,
-      //     logRequestStart: true,
-      //     logRequestComplete: true,
-      //     prettyPrint: true,
-      //     logEvents: ENV === DEV && [
-      //       "onPostStart",
-      //       "onPostStop",
-      //       "onRequest",
-      //       "response",
-      //       "request",
-      //       "request-error",
-      //       "log",
-      //     ],
-      //     // Redact Authorization headers, see https://getpino.io/#/docs/redaction
-      //     redact: ["req.headers.authorization"],
-      //   },
+      options: {
+        logPayload: true,
+        logRouteTags: true,
+        logRequestStart: true,
+        logRequestComplete: true,
+        prettyPrint: true,
+        logEvents: ENV === DEV && [
+          "onPostStart",
+          "onPostStop",
+          "onRequest",
+          "response",
+          "request",
+          "request-error",
+          "log",
+        ],
+        // Redact Authorization headers, see https://getpino.io/#/docs/redaction
+        redact: ["req.headers.authorization"],
+      },
     },
     // require("inert"),
     // require("hapi-auth-jwt2"),
 
     //require("../plugins/authentication"),
     //require("../plugins/chat"),
+    require("../plugins/messages"),
   ]);
 
   server.route({
@@ -61,28 +64,29 @@ const config = async () => {
 exports.init = async () => {
   const server = await config();
 
-  //   try {
-  await server.initialize();
+  try {
+    await server.initialize();
 
-  return server;
-  //   } catch (error) {
-  //     logger.error("server.js", error);
-  //   }
+    return server;
+  } catch (error) {
+    logger.error("server.js", error);
+  }
 
-  //   return null;
+  return null;
 };
 
 exports.start = async () => {
   const server = await config();
+
   connectSocket(server);
-  //   try {
-  await server.start();
-  //   } catch (error) {
-  //     logger.error("server.js", error);
-  //   }
+  try {
+    await server.start();
+  } catch (error) {
+    logger.error("server.js", error);
+  }
 };
 
 process.on("unhandledRejection", (error) => {
-  //   logger.error("server.js", error);
+  logger.error("server.js", error);
   process.exit(1);
 });

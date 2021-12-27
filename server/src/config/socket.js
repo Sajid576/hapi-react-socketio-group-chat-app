@@ -28,6 +28,6 @@ exports.connectSocket = (app) => {
   });
 
   server.listen(SOCKET_PORT, () => {
-    console.log("SERVER RUNNING");
+    console.log("SERVER RUNNING at ", SOCKET_PORT);
   });
 };

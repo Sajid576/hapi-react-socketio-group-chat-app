@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from "react";
 import ScrollToBottom from "react-scroll-to-bottom";
+import axios from "axios";
+
+let isFetched = false;
 
 function Chat({ socket, username, room }) {
   const [currentMessage, setCurrentMessage] = useState("");
@@ -11,21 +14,37 @@ function Chat({ socket, username, room }) {
         room: room,
         author: username,
         message: currentMessage,
-        time:
-          new Date(Date.now()).getHours() +
-          ":" +
-          new Date(Date.now()).getMinutes(),
+        // time:
+        //   new Date(Date.now()).getHours() +
+        //   ":" +
+        //   new Date(Date.now()).getMinutes(),
       };
-
       await socket.emit("send_message", messageData);
+      axios.post("http://localhost:8000/api/chat", {
+        messageData: messageData,
+      });
       setMessageList((list) => [...list, messageData]);
       setCurrentMessage("");
     }
   };
 
   useEffect(() => {
+    if (isFetched == false) {
+      axios
+        .get(`http://localhost:8000/api/chat/${room}`)
+        .then((response) => {
+          setMessageList(response.data.data);
+          isFetched = true;
+          console.log(response.data.data);
+        })
+        .catch(() => {
+          console.log("error");
+        });
+    }
+
     socket.on("receive_message", (data) => {
       setMessageList((list) => [...list, data]);
+      console.log(data);
     });
   }, [socket]);
 
