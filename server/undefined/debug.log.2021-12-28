@@ -1,0 +1,8 @@
+{
+  service: 'messanger-app',
+  tag: 'db.js',
+  data: { message: 'Database connection established!' },
+  level: 'debug',
+  message: 'db.js',
+  timestamp: '2021-12-28 12:44:59'
+}
